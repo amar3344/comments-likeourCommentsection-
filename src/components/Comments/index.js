@@ -21,11 +21,34 @@ class Comments extends Component {
     commentInput: '',
   }
 
+  renderFunctionForLikedImage = id => {
+    this.setState(prevState => ({
+      commentList: prevState.commentList.map(eachComment => {
+        if (eachComment.id === id) {
+          return {...eachComment, isLike: !eachComment.isLike}
+        }
+        return eachComment
+      }),
+    }))
+  }
+
+  getDeleteFunction = id => {
+    this.setState(prevState => ({
+      commentList: prevState.commentList.filter(eachItem => eachItem.id !== id),
+    }))
+  }
+
   getCommentContainer = () => {
-    const {commentList} = this.state
+    const {commentList, backGroundColors} = this.state
 
     return commentList.map(eachComment => (
-      <CommentItem key={eachComment.id} commentDetails={eachComment} />
+      <CommentItem
+        key={eachComment.id}
+        commentDetails={eachComment}
+        backGroundColors={backGroundColors}
+        renderFunctionForLikedImage={this.renderFunctionForLikedImage}
+        getDeleteFunction={this.getDeleteFunction}
+      />
     ))
   }
 
@@ -34,7 +57,7 @@ class Comments extends Component {
   }
 
   getNameInput = event => {
-    this.stateState({nameInput: event.target.value})
+    this.setState({nameInput: event.target.value})
   }
 
   addToComment = event => {
@@ -45,7 +68,9 @@ class Comments extends Component {
       id: uuidv4(),
       nameInput,
       commentInput,
+      date: new Date(),
       isLike: false,
+      backGroundColors: initialContainerBackgroundClassNames,
     }
 
     this.setState(prevState => ({
@@ -56,7 +81,7 @@ class Comments extends Component {
   }
 
   render() {
-    const {nameInput, commentInput, commentList} = this.state
+    const {commentList} = this.state
     return (
       <div className="main-container">
         <div className="bg-container">
@@ -86,9 +111,12 @@ class Comments extends Component {
             </button>
           </form>
           <div className="bottom-container">
-            <p className="no-of-comments">{commentList.length}</p>
+            <div className="no-of-comments-container">
+              <p className="no-of-comments">{commentList.length}</p>
+            </div>
             <p className="comment-text">Comments</p>
           </div>
+          <hr className="line" />
           <ul className="comment-list-container">
             {this.getCommentContainer()}
           </ul>
